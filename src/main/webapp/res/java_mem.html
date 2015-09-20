@@ -9,118 +9,16 @@ and open the template in the editor.
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script type="text/javascript" src="jquery.min.js"></script>
+        <script type="text/javascript" src="js/jquery.min.js"></script>
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-        <script type="text/javascript" src="java_mem.js"></script>
+        <script type="text/javascript" src="js/mychart.js"></script>
+        <script type="text/javascript" src="js/java_mem.js"></script>
         <script type="text/javascript">
             // Load the Visualization API and the piechart package.
             google.load('visualization', '1', {'packages': ['corechart']});
-
-            // Set a callback to run when the Google Visualization API is loaded.
-            // Set chart options
-            var options = {'title': 'Read Vs Write IOPS',
-                'width': 650,
-                'height': 350,
-                //backgroundColor:'',
-                chartArea: {width: '80%'},
-                series: {
-                    0: {color: '#00c0ef'},
-                    1: {color: '#f39c12'},
-                    2: {color: '#dd4b39'},
-                    3: {color: '#6f9654'},
-                    4: {color: '#1c91c0'},
-                    5: {color: '#43459d'},
-                },
-                //explorer:{keepInBounds:true},
-                lineWidth: 3,
-                //curveType: 'function',
-                legend: {position: 'bottom'},
-                animation: {
-                    //startup:true,
-                    duration: 1000,
-                    easing: 'out',
-                },
-                hAxis: {
-                    //direction: -1,
-                    format: 'HH:mm'
-                            //,gridlines: {count: 15}
-                },
-                vAxis: {
-                    //gridlines: {color: 'none'},
-                    //minValue: 0
-                }
-            };
-
-
-            // Callback that creates and populates a data table, 
-            // instantiates the pie chart, passes in the data and
-            // draws it.
-            function drawChart() {
-
-                // Create the data table.
-                var data = new google.visualization.DataTable();
-                data.addColumn('datetime', 'Time');
-                data.addColumn('number', 'Used');
-                data.addColumn('number', 'Committed');
-                data.addColumn('number', 'Max');
-
-                var _data = [];
-                var _dynoData = {};
-                data.addRows(_data);
-
-
-
-
-                // Instantiate and draw our chart, passing in some options.
-                var totalChart = new google.visualization.LineChart(document.getElementById('total_char_div'));
-                totalChart.draw(data, options);
-            }
         </script>
         <script type="text/javascript">
             (function (pubObj) {
-
-                function ChartModel() {
-                    this.gData;
-                    this.init();
-
-                }
-                ChartModel.prototype = {
-                    init: function (columns, rows) {
-                        var ME = this;
-                        ME.gData = new google.visualization.DataTable();
-                        for (var i = 0; i < columns.length; i++) {
-                            var clm = columns[i];
-                            ME.gData.addColumn(clm.type, clm.label);
-                        }
-                        if (rows) {
-                            ME.setRows(rows);
-                        }
-                    }, setData: function (rows) {
-                        var ME = this;
-                        ME.gData.addRows(rows);
-                    }, getChartData: function () {
-                        var ME = this;
-                        return ME.gData;
-                    }
-                };
-                function ChartView() {
-                    this.$container;
-                    this._chart;
-                }
-                ChartView.prototype = {
-                    init: function (container) {
-                        var ME = this;
-                        ME.$container = $(container);
-                        ME._chart = new google.visualization.LineChart(ME.$container[0]);
-                    },
-                    render: function (chartModel) {
-                        var ME = this;
-                        ME._chart.draw(chartModel.getChartData, options);
-                    }
-                }
-
-                function ChartController() {
-                }
 
                 var JVMCharUtil = {
                     splitByDyno: function (logData) {
@@ -139,59 +37,15 @@ and open the template in the editor.
                         return _dynoData;
                     }
                 };
-                /**
-                 * 
-                 * @returns {undefined}
-                 */
-                function BaseChart() {
-                    this.model;
-                    this.view;
-                    this.controller;
 
-                    this.opts;
-                    this._columns;
-                }
-                BaseChart.prototype = {
-                    init: function (container, columns) {
-                        var ME = this;
-                        //ME.opts = $.extend(true, {}, options, opts);
-                        this.model = new google.visualization.DataTable();
-                        this.view = new google.visualization.LineChart(container);
-                        this._columns = columns;
-                        for (var i = 0; i < ME._columns.length; i++) {
-                            var clm = ME._columns[i];
-                            ME.model.addColumn(clm.type, clm.label);
-                        }
-                        //this.controller = new ChartController();
-                        return this;
-                    },
-                    setOptions: function (opts) {
-                        var ME = this;
-                        ME.opts = $.extend(true, {}, options, opts);
-                    },
-                    /**
-                     * This method will render the current modal to the view
-                     * @returns {undefined}
-                     */
-                    render: function (reRender) {
-                        var ME = this;
-                        reRender = reRender || false;
-                        ME.view.draw(ME.model, ME.opts);
-                        //ME.view.render(ME.model);
-                    }, setData: function (rows) {
-                        var ME = this;
-                        ME.model.addRows(rows);
-                        ME.render();
-                    }
-                };
                 // The following classes are related to JVM Memory Charts
                 function JVMChart(container, cols) {
                     this.init(container, cols);
                 }
-                JVMChart.prototype = new BaseChart();
+                JVMChart.prototype = new ChartCreator.BaseChart();
                 JVMChart.prototype.constructor = JVMChart;
                 JVMChart.prototype.init = function (container, cols) {
-                    BaseChart.prototype.init.call(this, container, cols);
+                    ChartCreator.BaseChart.prototype.init.call(this, container, cols);
                     return this;
                 };
 
